@@ -1,0 +1,59 @@
+name: stewardx-cli
+version: "0.1.0"
+author: Gökay O. <gokayokyay@hotmail.com>
+about: An interface to communicate with StewardX
+subcommands:
+    - tasks:
+        about: controls tasks
+        subcommands:
+            - list:
+                about: lists tasks
+            - create:
+                about: create a new task
+                subcommands:
+                    - cmd:
+                        about: create a new task with CmdTask type
+                        args:
+                            - name:
+                                short: n
+                                about: Task Name
+                                takes_value: true
+                                required: true
+                            - command:
+                                short: c
+                                about: Command to execute
+                                takes_value: true
+                                required: true
+                            - frequency:
+                                short: f
+                                about: Task's frequency Hook or Every(*cron string*)
+                                takes_value: true
+                                required: true
+                    - docker:
+                        about: create a new task with DockerTask type
+                        args:
+                            - name:
+                                short: n
+                                about: Task Name
+                                takes_value: true
+                                required: true
+                            - frequency:
+                                short: f
+                                about: Task's frequency Hook or Every(*cron string*)
+                                takes_value: true
+                                required: true
+                            - type:
+                                short: t
+                                about: Docker task's type, either file or image
+                                takes_value: true
+                                required: true
+                            - contents:
+                                short: c
+                                about: Either Dockerfile's path or image_name:tag
+                                takes_value: true
+                                required: true
+                    
+        # args:
+        #     - debug:
+        #         short: d
+        #         about: print debug information
