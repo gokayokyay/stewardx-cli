@@ -4,12 +4,14 @@ use std::process;
 use std::fs;
 
 use clap::{App, ArgMatches, load_yaml};
+use env_logger::Env;
 
-use crate::utils::parse_cron_frequency;
+use crate::{api::get_tasks, utils::parse_cron_frequency};
 
 fn handle_tasks(tasks: &ArgMatches) {
     if let Some(list) = tasks.subcommand_matches("list") {
         println!("Listing tasks");
+        get_tasks();
     }
     if let Some(create) = tasks.subcommand_matches("create") {
         println!("Creating task: {:?}", create);
@@ -60,6 +62,9 @@ fn handle_tasks(tasks: &ArgMatches) {
 }
 
 fn main() {
+    let env = Env::default()
+        .filter_or("LOG_LEVEL", "info");
+    env_logger::init_from_env(env);
     // The YAML file is found relative to the current file, similar to how modules are found
     let yaml = load_yaml!("cli.yaml");
     let matches = App::from(yaml).get_matches();
