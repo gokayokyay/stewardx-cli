@@ -72,6 +72,13 @@ subcommands:
                         about: id of the task you want to execute
                         index: 1
                         required: true
+            - abort:
+                about: abort given task
+                args:
+                    - ID:
+                        about: id of the task you want to abort
+                        index: 1
+                        required: true
         # args:
         #     - debug:
         #         short: d
