@@ -65,7 +65,13 @@ subcommands:
                         about: id of the task you want to delete
                         index: 1
                         required: true
-
+            - execute:
+                about: execute given task
+                args:
+                    - ID:
+                        about: id of the task you want to execute
+                        index: 1
+                        required: true
         # args:
         #     - debug:
         #         short: d

@@ -3,7 +3,7 @@ mod api;
 use std::process;
 use std::fs;
 
-use api::{delete_task, get_active_tasks};
+use api::{delete_task, execute_task, get_active_tasks};
 use clap::{App, ArgMatches, load_yaml};
 use env_logger::Env;
 
@@ -69,6 +69,10 @@ fn handle_tasks(tasks: &ArgMatches) {
     if let Some(delete) = tasks.subcommand_matches("delete") {
         let task_id = delete.value_of("ID").unwrap();
         delete_task(task_id);
+    }
+    if let Some(execute) = tasks.subcommand_matches("execute") {
+        let task_id = execute.value_of("ID").unwrap();
+        execute_task(task_id);
     }
 }
 
