@@ -8,6 +8,10 @@ subcommands:
         subcommands:
             - list:
                 about: lists tasks
+                args:
+                    - ID:
+                        about: id of the task you want to list
+                        index: 1
             - create:
                 about: create a new task
                 subcommands:
@@ -52,7 +56,16 @@ subcommands:
                                 about: Either Dockerfile's path or image_name:tag
                                 takes_value: true
                                 required: true
-                    
+            - active:
+                about: get active tasks
+            - delete:
+                about: delete a task
+                args:
+                    - ID:
+                        about: id of the task you want to delete
+                        index: 1
+                        required: true
+
         # args:
         #     - debug:
         #         short: d

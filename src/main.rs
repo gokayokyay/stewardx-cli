@@ -3,15 +3,19 @@ mod api;
 use std::process;
 use std::fs;
 
+use api::{delete_task, get_active_tasks};
 use clap::{App, ArgMatches, load_yaml};
 use env_logger::Env;
 
-use crate::{api::get_tasks, utils::parse_cron_frequency};
+use crate::{api::{get_task, get_tasks}, utils::parse_cron_frequency};
 
 fn handle_tasks(tasks: &ArgMatches) {
     if let Some(list) = tasks.subcommand_matches("list") {
-        println!("Listing tasks");
-        get_tasks();
+        if let Some(task_id) = list.value_of("ID") {
+            get_task(task_id);
+        } else {
+            get_tasks();
+        }
     }
     if let Some(create) = tasks.subcommand_matches("create") {
         println!("Creating task: {:?}", create);
@@ -58,6 +62,13 @@ fn handle_tasks(tasks: &ArgMatches) {
             eprintln!("Error: please supply either cmd or docker to create command");
             process::exit(1);
         }
+    }
+    if let Some(_) = tasks.subcommand_matches("active") {
+        get_active_tasks();
+    }
+    if let Some(delete) = tasks.subcommand_matches("delete") {
+        let task_id = delete.value_of("ID").unwrap();
+        delete_task(task_id);
     }
 }
 

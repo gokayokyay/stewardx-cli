@@ -59,7 +59,8 @@ pub fn print_invalid_task_value(id: &str, key: &str, value: &Value) {
 }
 
 pub fn pretty_print_tasks(tasks: Vec<Value>) {
-    println!("{0: <12} | {1: <12} | {2: <12} | {3: <12}", "Task ID", "Name", "Type", "Frequency");
+    println!("{0: <36} | {1: <16} | {2: <8} | {3: <16}", "Task ID", "Name", "Type", "Frequency");
+    println!("---------------------------------------------------------------------------------");
     for task in tasks {
         pretty_print_task(task);
     }
@@ -89,5 +90,16 @@ pub fn pretty_print_task(task: Value) {
             process::exit(1);
         }
     };
-    println!("{0: <12} | {1: <12} | {2: <12} | {3: <12}", id, task_name, task_type, frequency);
+    let task_name = truncate_string_elliptic(task_name, 16);
+    println!("{0: <36} | {1: <16} | {2: <8} | {3: <16}", id, task_name, task_type, frequency);
+}
+
+fn truncate_string_elliptic(string: String, to: usize) -> String {
+    let mut cloned = string.clone();
+    if cloned.len().ge(&(to - 1)) {
+        cloned.truncate(to - 1);
+        format!("{}…", cloned)
+    } else {
+        cloned
+    }
 }
