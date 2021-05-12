@@ -3,7 +3,10 @@ use std::{process, str::FromStr};
 use serde_json::Value;
 
 pub fn parse_cron_frequency(frequency: &str) -> String {
-    let cron_str = frequency.starts_with("Every(").then(|| remove_cron_freq_prefix(frequency)).or_else(|| Some(frequency));
+    let cron_str = frequency
+        .starts_with("Every(")
+        .then(|| remove_cron_freq_prefix(frequency))
+        .or_else(|| Some(frequency));
     let cron_str = match cron_str {
         Some(c) => c,
         None => {
@@ -16,14 +19,14 @@ pub fn parse_cron_frequency(frequency: &str) -> String {
         process::exit(1)
     });
     match cron::Schedule::from_str(cron_str) {
-        Ok(_a) => {},
+        Ok(_a) => {}
         Err(_e) => {
             eprintln!("Please enter a valid cron string.");
             process::exit(1);
         }
     };
     let parsed_frequency = format!("Every({})", cron_str);
-    return parsed_frequency;   
+    return parsed_frequency;
 }
 
 pub fn remove_cron_freq_prefix(frequency: &str) -> &str {
@@ -39,13 +42,15 @@ pub fn remove_cron_freq_prefix(frequency: &str) -> &str {
 
 pub fn print_connection_failure(e: isahc::Error) {
     log::debug!("{}", e);
-    eprintln!(r#"
+    eprintln!(
+        r#"
         Couldn't connect to StewardX. Here's what you can do:
         - Try the same command with setting LOG_LEVEL environment variable to debug, like LOG_LEVEL=debug stewardx ...
         - Check if StewardX instance is running
         - Check environment variables, STEWARDX_URL or STEWARDX_HOST and STEWARDX_PORT
         - Use cURL to connect StewardX instance, if it doesn't fail, please open an issue at https://github.com/gokayokyay/stewardx-cli
-    "#);
+    "#
+    );
 }
 
 pub fn print_json_failure(e: serde_json::Error) {
@@ -54,12 +59,20 @@ pub fn print_json_failure(e: serde_json::Error) {
 }
 
 pub fn print_invalid_task_value(id: &str, key: &str, value: &Value) {
-    log::error!("Task with id: {} has an invalid property named: \"{}\" with value: \"{}\"", id, key, value);
+    log::error!(
+        "Task with id: {} has an invalid property named: \"{}\" with value: \"{}\"",
+        id,
+        key,
+        value
+    );
     log::error!("Please open an issue at https://github.com/gokayokyay/stewardx-cli and describe how to reproduce it, thanks!");
 }
 
 fn format_and_print_task(id: &str, name: &str, task_type: &str, frequency: &str) {
-    println!("{0: <36} | {1: <16} | {2: <8} | {3: <16}", id, name, task_type, frequency);
+    println!(
+        "{0: <36} | {1: <16} | {2: <8} | {3: <16}",
+        id, name, task_type, frequency
+    );
 }
 
 pub fn pretty_print_tasks(tasks: Vec<Value>) {
@@ -95,7 +108,7 @@ pub fn parse_and_print_task(task: Value) {
         }
     };
     let task_name = truncate_string_elliptic(task_name, 16);
-    format_and_print_task(id, &task_name,&task_type, &frequency);
+    format_and_print_task(id, &task_name, &task_type, &frequency);
 }
 
 fn truncate_string_elliptic(string: String, to: usize) -> String {
@@ -117,7 +130,12 @@ pub fn capitalize(s: &str) -> String {
 }
 
 pub fn print_invalid_report_value(id: &str, key: &str, value: &Value) {
-    log::error!("Report with id: {} has an invalid property named: \"{}\" with value: \"{}\"", id, key, value);
+    log::error!(
+        "Report with id: {} has an invalid property named: \"{}\" with value: \"{}\"",
+        id,
+        key,
+        value
+    );
     log::error!("Please open an issue at https://github.com/gokayokyay/stewardx-cli and describe how to reproduce it, thanks!");
 }
 
@@ -132,14 +150,12 @@ pub fn parse_and_print_report(report: Value) {
         }
     };
     let created_at = match &report["created_at"] {
-        Value::String(v) => {
-            match chrono::NaiveDateTime::from_str(v) {
-                Ok(o) => format_date(o),
-                Err(e) => {
-                    log::error!("{}", e);
-                    print_invalid_report_value(id, "created_at", &report["created_at"]);
-                    process::exit(1);
-                }
+        Value::String(v) => match chrono::NaiveDateTime::from_str(v) {
+            Ok(o) => format_date(o),
+            Err(e) => {
+                log::error!("{}", e);
+                print_invalid_report_value(id, "created_at", &report["created_at"]);
+                process::exit(1);
             }
         },
         _ => {
@@ -154,7 +170,7 @@ pub fn parse_and_print_report(report: Value) {
             process::exit(1);
         }
     };
-    format_and_print_report(id, &task_id,&created_at, *successful);
+    format_and_print_report(id, &task_id, &created_at, *successful);
 }
 
 fn format_date(date: chrono::NaiveDateTime) -> String {
@@ -162,7 +178,13 @@ fn format_date(date: chrono::NaiveDateTime) -> String {
 }
 
 fn format_and_print_report(id: &str, task_id: &str, executed_at: &str, successful: impl ToString) {
-    println!("{0: <36} | {1: <36} | {2: <24} | {3: <10}", id, task_id, executed_at, successful.to_string());
+    println!(
+        "{0: <36} | {1: <36} | {2: <24} | {3: <10}",
+        id,
+        task_id,
+        executed_at,
+        successful.to_string()
+    );
 }
 
 pub fn pretty_print_reports(reports: Vec<Value>) {

@@ -1,13 +1,19 @@
-mod utils;
 mod api;
-use std::process;
+mod utils;
 use std::fs;
+use std::process;
 
-use api::{abort_task, delete_task, execute_task, get_active_tasks, get_latest_reports, get_reports_for_task};
-use clap::{App, ArgMatches, load_yaml};
+use api::{
+    abort_task, delete_task, execute_task, get_active_tasks, get_latest_reports,
+    get_reports_for_task,
+};
+use clap::{load_yaml, App, ArgMatches};
 use env_logger::Env;
 
-use crate::{api::{create_task, get_report, get_task, get_tasks}, utils::{capitalize, parse_cron_frequency}};
+use crate::{
+    api::{create_task, get_report, get_task, get_tasks},
+    utils::{capitalize, parse_cron_frequency},
+};
 
 fn handle_tasks(tasks: &ArgMatches) {
     if let Some(list) = tasks.subcommand_matches("list") {
@@ -27,9 +33,7 @@ fn handle_tasks(tasks: &ArgMatches) {
             } else {
                 parse_cron_frequency(frequency)
             };
-            let props = serde_json::json!({
-                "command": command
-            });
+            let props = serde_json::json!({ "command": command });
             create_task("CmdTask", name, &frequency, &props);
         } else if let Some(docker) = create.subcommand_matches("docker") {
             let name = docker.value_of("name").unwrap();
@@ -41,20 +45,19 @@ fn handle_tasks(tasks: &ArgMatches) {
             };
             let docker_type = docker.value_of("type").unwrap();
             let contents = docker.value_of("contents").unwrap();
-            let environment_vars = docker.values_of("env").unwrap_or(clap::Values::default()).collect::<Vec<&str>>();
+            let environment_vars = docker
+                .values_of("env")
+                .unwrap_or(clap::Values::default())
+                .collect::<Vec<&str>>();
             let contents = match docker_type {
-                "file" => {
-                    match fs::read_to_string(contents) {
-                        Ok(c) => c,
-                        Err(_e) => {
-                            eprintln!("Couldn't read the file specified, please make sure the Dockerfile's path is correct.");
-                            process::exit(1);
-                        }
+                "file" => match fs::read_to_string(contents) {
+                    Ok(c) => c,
+                    Err(_e) => {
+                        eprintln!("Couldn't read the file specified, please make sure the Dockerfile's path is correct.");
+                        process::exit(1);
                     }
                 },
-                "image" => {
-                    contents.to_string()
-                }
+                "image" => contents.to_string(),
                 _ => {
                     eprintln!("Invalid type specified, please supply either \"file\" or \"image\"");
                     process::exit(1);
@@ -108,8 +111,7 @@ fn handle_reports(reports: &ArgMatches) {
 }
 
 fn main() {
-    let env = Env::default()
-        .filter_or("LOG_LEVEL", "info");
+    let env = Env::default().filter_or("LOG_LEVEL", "info");
     env_logger::init_from_env(env);
     // The YAML file is found relative to the current file, similar to how modules are found
     let yaml = load_yaml!("cli.yaml");

@@ -1,9 +1,11 @@
 use std::process;
 
-use isahc::{Request, get, post, prelude::*};
+use isahc::{get, post, prelude::*, Request};
 use serde_json::{Result as SerdeResult, Value};
 
-use crate::utils::{pretty_print_reports, pretty_print_tasks, print_connection_failure, print_json_failure};
+use crate::utils::{
+    pretty_print_reports, pretty_print_tasks, print_connection_failure, print_json_failure,
+};
 
 fn get_stewardx_url() -> String {
     match std::env::var("STEWARDX_URL") {
@@ -20,13 +22,11 @@ pub fn get_active_tasks() {
     let url = format!("{}/activetasks", get_stewardx_url());
     let tasks: Result<SerdeResult<Value>, isahc::Error> = get(url).map(|mut t| t.json());
     let tasks = match tasks {
-        Ok(a) => {
-            match a {
-                Ok(val) => val,
-                Err(e) => {
-                    print_json_failure(e);
-                    process::exit(1);
-                }
+        Ok(a) => match a {
+            Ok(val) => val,
+            Err(e) => {
+                print_json_failure(e);
+                process::exit(1);
             }
         },
         Err(e) => {
@@ -38,18 +38,15 @@ pub fn get_active_tasks() {
     pretty_print_tasks(tasks.to_vec());
 }
 
-
 pub fn get_tasks() {
     let url = format!("{}/tasks", get_stewardx_url());
     let tasks: Result<SerdeResult<Value>, isahc::Error> = get(url).map(|mut t| t.json());
     let tasks = match tasks {
-        Ok(a) => {
-            match a {
-                Ok(val) => val,
-                Err(e) => {
-                    print_json_failure(e);
-                    process::exit(1);
-                }
+        Ok(a) => match a {
+            Ok(val) => val,
+            Err(e) => {
+                print_json_failure(e);
+                process::exit(1);
             }
         },
         Err(e) => {
@@ -65,13 +62,11 @@ pub fn get_task(id: &str) {
     let url = format!("{}/tasks/{}", get_stewardx_url(), id);
     let tasks: Result<SerdeResult<Value>, isahc::Error> = get(url).map(|mut t| t.json());
     let task = match tasks {
-        Ok(a) => {
-            match a {
-                Ok(val) => val,
-                Err(e) => {
-                    print_json_failure(e);
-                    process::exit(1);
-                }
+        Ok(a) => match a {
+            Ok(val) => val,
+            Err(e) => {
+                print_json_failure(e);
+                process::exit(1);
             }
         },
         Err(e) => {
@@ -95,9 +90,8 @@ pub fn delete_task(id: &str) {
     let request = Request::builder()
         .uri(url)
         .method(isahc::http::Method::DELETE)
-        .body(serde_json::json!({
-            "task_id": id
-        }).to_string()).unwrap();
+        .body(serde_json::json!({ "task_id": id }).to_string())
+        .unwrap();
     let response = request.send();
     match response {
         Ok(mut r) => {
@@ -143,7 +137,7 @@ pub fn execute_task(id: &str) {
                     process::exit(1);
                 }
             };
-        },
+        }
         Err(e) => {
             print_connection_failure(e);
             process::exit(1);
@@ -156,9 +150,8 @@ pub fn abort_task(id: &str) {
     let request = Request::builder()
         .uri(url)
         .method(isahc::http::Method::POST)
-        .body(serde_json::json!({
-            "task_id": id
-        }).to_string()).unwrap();
+        .body(serde_json::json!({ "task_id": id }).to_string())
+        .unwrap();
     let response = request.send();
     match response {
         Ok(mut r) => {
@@ -190,12 +183,16 @@ pub fn create_task(task_type: &str, name: &str, frequency: &str, props: &Value) 
     let request = Request::builder()
         .uri(url)
         .method(isahc::http::Method::POST)
-        .body(serde_json::json!({
-            "task_type": task_type,
-            "task_name": name,
-            "frequency": frequency,
-            "task_props": props
-        }).to_string()).unwrap();
+        .body(
+            serde_json::json!({
+                "task_type": task_type,
+                "task_name": name,
+                "frequency": frequency,
+                "task_props": props
+            })
+            .to_string(),
+        )
+        .unwrap();
     let response = request.send();
     match response {
         Ok(mut r) => {
@@ -233,7 +230,7 @@ pub fn get_reports_for_task(id: &str) {
                     process::exit(1);
                 }
             };
-        },
+        }
         Err(e) => {
             print_connection_failure(e);
             process::exit(1);
@@ -257,7 +254,7 @@ pub fn get_latest_reports() {
                     process::exit(1);
                 }
             };
-        },
+        }
         Err(e) => {
             print_connection_failure(e);
             process::exit(1);
@@ -271,23 +268,21 @@ pub fn get_report(id: &str) {
     match reports {
         Ok(result) => {
             match result {
-                Ok(r) => {
-                    match serde_json::to_string_pretty(&r) {
-                        Ok(v) => {
-                            println!("{}", v);
-                        }
-                        Err(e) => {
-                            print_json_failure(e);
-                            process::exit(1);
-                        }
+                Ok(r) => match serde_json::to_string_pretty(&r) {
+                    Ok(v) => {
+                        println!("{}", v);
                     }
-                }
+                    Err(e) => {
+                        print_json_failure(e);
+                        process::exit(1);
+                    }
+                },
                 Err(e) => {
                     print_json_failure(e);
                     process::exit(1);
                 }
             };
-        },
+        }
         Err(e) => {
             print_connection_failure(e);
             process::exit(1);
