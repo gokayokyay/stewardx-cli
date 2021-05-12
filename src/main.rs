@@ -1,5 +1,7 @@
 mod api;
+mod output;
 mod utils;
+
 use std::fs;
 use std::process;
 

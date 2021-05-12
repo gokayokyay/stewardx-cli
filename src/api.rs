@@ -3,7 +3,7 @@ use std::process;
 use isahc::{get, post, prelude::*, Request};
 use serde_json::{Result as SerdeResult, Value};
 
-use crate::utils::{
+use crate::output::{
     pretty_print_reports, pretty_print_tasks, print_connection_failure, print_json_failure,
 };
 
