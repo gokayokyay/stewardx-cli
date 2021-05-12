@@ -71,3 +71,25 @@ pub fn fetch_latest_binary() {
     };
 }
 
+pub fn start_stewardx() {
+    // Check STEWARDX_DATABASE_URL env var
+    match std::env::var("STEWARDX_DATABASE_URL") {
+        Ok(_) => {
+            println!("✓ - STEWARDX_DATABASE_URL environment variable has been found.")
+        },
+        Err(_) => {
+            eprintln!("X - STEWARDX_DATABASE_URL environment variable doesn't exist. Quitting.");
+            process::exit(1);
+        }
+    };
+    use fork::{daemon, Fork};
+    use std::process::Command;
+    let mut binary_path = get_binary_dir();
+    binary_path.push("stewardx");
+    if let Ok(Fork::Child) = daemon(false, false) {
+        Command::new(binary_path)
+            .output()
+            .expect("failed to execute process");
+        println!("Started StewardX!");
+    }
+}

@@ -106,7 +106,8 @@ subcommands:
                         index: 1
     - install:
         about: installs the latest StewardX
-
+    - run:
+        about: start the StewardX instance!
         # args:
         #     - debug:
         #         short: d
