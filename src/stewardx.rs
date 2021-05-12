@@ -42,7 +42,7 @@ pub fn fetch_latest_binary() {
                 match request.send() {
                     Ok(mut o) => {
                         let mut binary_dir = get_binary_dir();
-                        binary_dir.push(name);
+                        binary_dir.push("stewardx");
                         match o.copy_to_file(binary_dir.clone()) {
                             Ok(_) => {
                                 let mut perms = std::fs::metadata(binary_dir.clone()).unwrap().permissions();
