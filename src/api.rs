@@ -184,3 +184,35 @@ pub fn abort_task(id: &str) {
         }
     };
 }
+
+pub fn create_task(task_type: &str, name: &str, frequency: &str, props: &Value) {
+    let url = format!("{}/tasks", get_stewardx_url());
+    let request = Request::builder()
+        .uri(url)
+        .method(isahc::http::Method::POST)
+        .body(serde_json::json!({
+            "task_type": task_type,
+            "task_name": name,
+            "frequency": frequency,
+            "task_props": props
+        }).to_string()).unwrap();
+    let response = request.send();
+    match response {
+        Ok(mut r) => {
+            let result: SerdeResult<Value> = r.json();
+            match result {
+                Ok(r) => {
+                    pretty_print_tasks(vec![r]);
+                }
+                Err(e) => {
+                    print_json_failure(e);
+                    process::exit(1);
+                }
+            };
+        }
+        Err(e) => {
+            print_connection_failure(e);
+            process::exit(1);
+        }
+    };
+}

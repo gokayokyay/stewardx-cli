@@ -7,7 +7,7 @@ use api::{abort_task, delete_task, execute_task, get_active_tasks};
 use clap::{App, ArgMatches, load_yaml};
 use env_logger::Env;
 
-use crate::{api::{get_task, get_tasks}, utils::parse_cron_frequency};
+use crate::{api::{create_task, get_task, get_tasks}, utils::{capitalize, parse_cron_frequency}};
 
 fn handle_tasks(tasks: &ArgMatches) {
     if let Some(list) = tasks.subcommand_matches("list") {
@@ -18,7 +18,6 @@ fn handle_tasks(tasks: &ArgMatches) {
         }
     }
     if let Some(create) = tasks.subcommand_matches("create") {
-        println!("Creating task: {:?}", create);
         if let Some(cmd) = create.subcommand_matches("cmd") {
             let command = cmd.value_of("command").unwrap();
             let name = cmd.value_of("name").unwrap();
@@ -28,7 +27,10 @@ fn handle_tasks(tasks: &ArgMatches) {
             } else {
                 parse_cron_frequency(frequency)
             };
-            println!("{}, {}, {}", name,command,frequency);
+            let props = serde_json::json!({
+                "command": command
+            });
+            create_task("CmdTask", name, &frequency, &props);
         } else if let Some(docker) = create.subcommand_matches("docker") {
             let name = docker.value_of("name").unwrap();
             let frequency = docker.value_of("frequency").unwrap();
@@ -39,6 +41,7 @@ fn handle_tasks(tasks: &ArgMatches) {
             };
             let docker_type = docker.value_of("type").unwrap();
             let contents = docker.value_of("contents").unwrap();
+            let environment_vars = docker.values_of("env").unwrap_or(clap::Values::default()).collect::<Vec<&str>>();
             let contents = match docker_type {
                 "file" => {
                     match fs::read_to_string(contents) {
@@ -57,7 +60,15 @@ fn handle_tasks(tasks: &ArgMatches) {
                     process::exit(1);
                 }
             };
-            println!("{}, {}, {}, {}", name, frequency, docker_type, contents);
+            let docker_type = capitalize(docker_type);
+            let task_props = serde_json::json!({
+                "image": {
+                    "t": docker_type,
+                    "c": contents
+                },
+                "env": environment_vars
+            });
+            create_task("DockerTask", name, &frequency, &task_props);
         } else {
             eprintln!("Error: please supply either cmd or docker to create command");
             process::exit(1);
