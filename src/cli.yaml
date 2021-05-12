@@ -84,6 +84,27 @@ subcommands:
                         about: id of the task you want to abort
                         index: 1
                         required: true
+    - reports:
+        about: controls reports
+        args:
+            - task:
+                short: t
+                about: id of the task you want the reports for
+                takes_value: true
+            # - ID:
+            #     about: id of the report you want to see
+            #     takes_value: true
+            #     index: 1
+        subcommands:
+            - latest:
+                -about: get latest reports
+            - list:
+                about: lists report
+                args:
+                    - ID:
+                        about: id of the report you want to list
+                        index: 1
+
         # args:
         #     - debug:
         #         short: d

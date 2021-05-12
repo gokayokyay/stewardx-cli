@@ -3,11 +3,11 @@ mod api;
 use std::process;
 use std::fs;
 
-use api::{abort_task, delete_task, execute_task, get_active_tasks};
+use api::{abort_task, delete_task, execute_task, get_active_tasks, get_latest_reports, get_reports_for_task};
 use clap::{App, ArgMatches, load_yaml};
 use env_logger::Env;
 
-use crate::{api::{create_task, get_task, get_tasks}, utils::{capitalize, parse_cron_frequency}};
+use crate::{api::{create_task, get_report, get_task, get_tasks}, utils::{capitalize, parse_cron_frequency}};
 
 fn handle_tasks(tasks: &ArgMatches) {
     if let Some(list) = tasks.subcommand_matches("list") {
@@ -91,6 +91,22 @@ fn handle_tasks(tasks: &ArgMatches) {
     }
 }
 
+fn handle_reports(reports: &ArgMatches) {
+    if let Some(list) = reports.subcommand_matches("list") {
+        if let Some(report_id) = list.value_of("ID") {
+            get_report(report_id);
+        } else {
+            get_latest_reports();
+        }
+    }
+    if let Some(task) = reports.value_of("task") {
+        get_reports_for_task(task);
+    }
+    if let Some(_latest) = reports.subcommand_matches("latest") {
+        get_latest_reports()
+    }
+}
+
 fn main() {
     let env = Env::default()
         .filter_or("LOG_LEVEL", "info");
@@ -101,5 +117,8 @@ fn main() {
     // println!("{:?}", matches);
     if let Some(tasks) = matches.subcommand_matches("tasks") {
         handle_tasks(tasks);
+    }
+    if let Some(reports) = matches.subcommand_matches("reports") {
+        handle_reports(reports);
     }
 }

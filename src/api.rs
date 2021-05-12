@@ -3,7 +3,7 @@ use std::process;
 use isahc::{Request, get, post, prelude::*};
 use serde_json::{Result as SerdeResult, Value};
 
-use crate::utils::{pretty_print_tasks, print_connection_failure, print_json_failure};
+use crate::utils::{pretty_print_reports, pretty_print_tasks, print_connection_failure, print_json_failure};
 
 fn get_stewardx_url() -> String {
     match std::env::var("STEWARDX_URL") {
@@ -210,6 +210,84 @@ pub fn create_task(task_type: &str, name: &str, frequency: &str, props: &Value) 
                 }
             };
         }
+        Err(e) => {
+            print_connection_failure(e);
+            process::exit(1);
+        }
+    };
+}
+
+pub fn get_reports_for_task(id: &str) {
+    let url = format!("{}/task/{}/reports", get_stewardx_url(), id);
+    let reports: Result<SerdeResult<Value>, isahc::Error> = get(url).map(|mut t| t.json());
+    match reports {
+        Ok(result) => {
+            match result {
+                Ok(r) => {
+                    let reports = r.as_array().map(|v| v.to_owned()).unwrap_or(Vec::new());
+                    pretty_print_reports(reports);
+                    // println!("{}", r);
+                }
+                Err(e) => {
+                    print_json_failure(e);
+                    process::exit(1);
+                }
+            };
+        },
+        Err(e) => {
+            print_connection_failure(e);
+            process::exit(1);
+        }
+    };
+}
+
+pub fn get_latest_reports() {
+    let url = format!("{}/reports", get_stewardx_url());
+    let reports: Result<SerdeResult<Value>, isahc::Error> = get(url).map(|mut t| t.json());
+    match reports {
+        Ok(result) => {
+            match result {
+                Ok(r) => {
+                    let reports = r.as_array().map(|v| v.to_owned()).unwrap_or(Vec::new());
+                    pretty_print_reports(reports);
+                    // println!("{}", r);
+                }
+                Err(e) => {
+                    print_json_failure(e);
+                    process::exit(1);
+                }
+            };
+        },
+        Err(e) => {
+            print_connection_failure(e);
+            process::exit(1);
+        }
+    };
+}
+
+pub fn get_report(id: &str) {
+    let url = format!("{}/reports/{}", get_stewardx_url(), id);
+    let reports: Result<SerdeResult<Value>, isahc::Error> = get(url).map(|mut t| t.json());
+    match reports {
+        Ok(result) => {
+            match result {
+                Ok(r) => {
+                    match serde_json::to_string_pretty(&r) {
+                        Ok(v) => {
+                            println!("{}", v);
+                        }
+                        Err(e) => {
+                            print_json_failure(e);
+                            process::exit(1);
+                        }
+                    }
+                }
+                Err(e) => {
+                    print_json_failure(e);
+                    process::exit(1);
+                }
+            };
+        },
         Err(e) => {
             print_connection_failure(e);
             process::exit(1);
