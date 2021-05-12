@@ -104,6 +104,8 @@ subcommands:
                     - ID:
                         about: id of the report you want to list
                         index: 1
+    - install:
+        about: installs the latest StewardX
 
         # args:
         #     - debug:

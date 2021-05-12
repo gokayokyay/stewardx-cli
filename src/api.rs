@@ -4,7 +4,7 @@ use isahc::{get, post, prelude::*, Request};
 use serde_json::{Result as SerdeResult, Value};
 
 use crate::output::{
-    pretty_print_reports, pretty_print_tasks, print_connection_failure, print_json_failure,
+    pretty_print_reports, pretty_print_tasks, print_stewardx_connection_failure, print_json_failure,
 };
 
 fn get_stewardx_url() -> String {
@@ -30,7 +30,7 @@ pub fn get_active_tasks() {
             }
         },
         Err(e) => {
-            print_connection_failure(e);
+            print_stewardx_connection_failure(e);
             process::exit(1);
         }
     };
@@ -50,7 +50,7 @@ pub fn get_tasks() {
             }
         },
         Err(e) => {
-            print_connection_failure(e);
+            print_stewardx_connection_failure(e);
             process::exit(1);
         }
     };
@@ -70,7 +70,7 @@ pub fn get_task(id: &str) {
             }
         },
         Err(e) => {
-            print_connection_failure(e);
+            print_stewardx_connection_failure(e);
             process::exit(1);
         }
     };
@@ -112,7 +112,7 @@ pub fn delete_task(id: &str) {
             };
         }
         Err(e) => {
-            print_connection_failure(e);
+            print_stewardx_connection_failure(e);
             process::exit(1);
         }
     };
@@ -139,7 +139,7 @@ pub fn execute_task(id: &str) {
             };
         }
         Err(e) => {
-            print_connection_failure(e);
+            print_stewardx_connection_failure(e);
             process::exit(1);
         }
     };
@@ -172,7 +172,7 @@ pub fn abort_task(id: &str) {
             };
         }
         Err(e) => {
-            print_connection_failure(e);
+            print_stewardx_connection_failure(e);
             process::exit(1);
         }
     };
@@ -208,7 +208,7 @@ pub fn create_task(task_type: &str, name: &str, frequency: &str, props: &Value) 
             };
         }
         Err(e) => {
-            print_connection_failure(e);
+            print_stewardx_connection_failure(e);
             process::exit(1);
         }
     };
@@ -232,7 +232,7 @@ pub fn get_reports_for_task(id: &str) {
             };
         }
         Err(e) => {
-            print_connection_failure(e);
+            print_stewardx_connection_failure(e);
             process::exit(1);
         }
     };
@@ -256,7 +256,7 @@ pub fn get_latest_reports() {
             };
         }
         Err(e) => {
-            print_connection_failure(e);
+            print_stewardx_connection_failure(e);
             process::exit(1);
         }
     };
@@ -284,7 +284,7 @@ pub fn get_report(id: &str) {
             };
         }
         Err(e) => {
-            print_connection_failure(e);
+            print_stewardx_connection_failure(e);
             process::exit(1);
         }
     };

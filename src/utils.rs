@@ -1,4 +1,4 @@
-use std::{process, str::FromStr};
+use std::{path::PathBuf, process, str::FromStr};
 
 pub fn parse_cron_frequency(frequency: &str) -> String {
     let cron_str = frequency
@@ -58,4 +58,45 @@ pub fn capitalize(s: &str) -> String {
 
 pub fn format_date(date: chrono::NaiveDateTime) -> String {
     date.format("%Y-%m-%d %H:%M:%S UTC").to_string()
+}
+
+pub fn get_nodejs_compatible_arch() -> &'static str {
+    let arch = std::env::consts::ARCH;
+    return match arch {
+        "x86_64" => "x64",
+        "x86" => "x32",
+        "aarch64" => "arm64",
+        _ => arch
+    };
+}
+
+pub fn get_binary_dir() -> PathBuf {
+    match std::env::var("STEWARDX_DIR") {
+        Ok(dir) => match PathBuf::from_str(&dir) {
+            Ok(dir) => dir,
+            Err(e) => {
+                panic!("{}", e);
+            }
+        },
+        Err(_) => {
+            match home::home_dir() {
+                Some(mut s) => {
+                    s.push(".stewardx");
+                    s
+                },
+                None => {
+                    return PathBuf::from_str("$HOME/.stewardx").unwrap();
+                }
+            }
+        }
+    }
+}
+
+pub fn create_stewardx_dirs() {
+    match std::fs::create_dir_all(get_binary_dir()) {
+        Ok(_) => {}
+        Err(e) => {
+            panic!("{}", e);
+        }
+    }
 }

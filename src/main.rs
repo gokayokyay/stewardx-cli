@@ -1,6 +1,7 @@
 mod api;
 mod output;
 mod utils;
+mod stewardx;
 
 use std::fs;
 use std::process;
@@ -11,6 +12,7 @@ use api::{
 };
 use clap::{load_yaml, App, ArgMatches};
 use env_logger::Env;
+use stewardx::fetch_latest_binary;
 
 use crate::{
     api::{create_task, get_report, get_task, get_tasks},
@@ -124,5 +126,8 @@ fn main() {
     }
     if let Some(reports) = matches.subcommand_matches("reports") {
         handle_reports(reports);
+    }
+    if let Some(_install) = matches.subcommand_matches("install") {
+        fetch_latest_binary();
     }
 }

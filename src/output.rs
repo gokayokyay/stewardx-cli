@@ -8,6 +8,15 @@ pub fn print_connection_failure(e: isahc::Error) {
     log::debug!("{}", e);
     eprintln!(
         r#"
+        Connection failed, please check your network status and run the same command with LOG_LEVEL=debug
+        "#
+    );
+}
+
+pub fn print_stewardx_connection_failure(e: isahc::Error) {
+    log::debug!("{}", e);
+    eprintln!(
+        r#"
         Couldn't connect to StewardX. Here's what you can do:
         - Try the same command with setting LOG_LEVEL environment variable to debug, like LOG_LEVEL=debug stewardx ...
         - Check if StewardX instance is running
