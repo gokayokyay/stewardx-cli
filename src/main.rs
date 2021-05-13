@@ -14,7 +14,7 @@ use clap::{load_yaml, App, ArgMatches};
 use env_logger::Env;
 use stewardx::fetch_latest_binary;
 
-use crate::{api::{create_task, get_report, get_task, get_tasks}, stewardx::start_stewardx, utils::{capitalize, parse_cron_frequency}};
+use crate::{api::{create_task, get_report, get_task, get_tasks}, stewardx::{start_stewardx, stop_stewardx}, utils::{capitalize, parse_cron_frequency}};
 
 fn handle_tasks(tasks: &ArgMatches) {
     if let Some(list) = tasks.subcommand_matches("list") {
@@ -129,5 +129,11 @@ fn main() {
     }
     if let Some(_run) = matches.subcommand_matches("run") {
         start_stewardx();
+    }
+    if let Some(_run) = matches.subcommand_matches("start") {
+        start_stewardx();
+    }
+    if let Some(_run) = matches.subcommand_matches("stop") {
+        stop_stewardx();
     }
 }

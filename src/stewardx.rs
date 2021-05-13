@@ -1,9 +1,9 @@
 use std::{os::unix::prelude::PermissionsExt, process};
 
-use isahc::{ReadResponseExt, Request, RequestExt, config::{Configurable, RedirectPolicy}};
+use isahc::{ReadResponseExt, Request, RequestExt, config::{Configurable, Dialer, RedirectPolicy}};
 use serde_json::{Result as SerdeResult, Value};
 
-use crate::{output::{print_connection_failure, print_json_failure}, utils::{create_stewardx_dirs, get_binary_dir, get_nodejs_compatible_arch}};
+use crate::{output::{print_connection_failure, print_json_failure}, utils::{create_stewardx_dirs, get_binary_dir, get_nodejs_compatible_arch, get_socket_path}};
 
 pub fn check_os_and_arch(name: &str) -> bool {
     let os = std::env::consts::OS;
@@ -92,4 +92,24 @@ pub fn start_stewardx() {
             .expect("failed to execute process");
         println!("Started StewardX!");
     }
+}
+
+pub fn stop_stewardx() {
+    let request = Request::get("http://stop")
+        .dial(Dialer::unix_socket(get_socket_path().to_str().unwrap()))
+        .body(()).unwrap();
+    match request.send() {
+        Ok(mut r) => {
+            let response = r.text().unwrap();
+            if response.eq("Goodbye!") {
+                println!("Successfully stopped StewardX.");
+            } else {
+                println!("StewardX returned other than a goodbye message, here it is: {}", response);
+            }
+        }
+        Err(e) => {
+            println!("{}", e.to_string());
+            print_connection_failure(e);
+        }
+    };
 }
