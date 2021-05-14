@@ -92,10 +92,10 @@ if [ $RESULT != 0 ]; then
     exit 1;
 fi
 
-mv stewardx-cli* stewardx-cli
+mv stewardx-cli* stxctl
 
 echo "Downloaded latest binary for your system, now changing permissions..."
-chmod +x stewardx-cli
+chmod +x stxctl
 echo "It's now an executable, appending the path to your profile..."
 
 echo "export PATH=\"\$PATH:/\$HOME/.stewardx\"" >> "$(detect_profile)"
@@ -103,3 +103,8 @@ echo ""
 echo "Appended \"export PATH=\"\$PATH:/\$HOME/.stewardx\"\" to $(detect_profile). Now all you need to do is running:"
 echo ""
 echo "source $(detect_profile)"
+echo ""
+echo ""
+echo "Then you can run \"stxctl install\" to install StewardX"
+echo "And run \"stxctl start\" to start StewardX! Make sure you have STEWARDX_DATABASE_URL environment variable set."
+echo "See you around!"

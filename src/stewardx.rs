@@ -72,6 +72,12 @@ pub fn fetch_latest_binary() {
 }
 
 pub fn start_stewardx() {
+    // Check if an instance is already running
+    if check_if_stewardx_is_running() {
+        println!("An instance of StewardX is already running! Please stop it first.");
+        println!("However, if you're sure that StewardX is not running, then please delete file located at: {}", get_socket_path().to_str().unwrap());
+        process::exit(1);
+    }
     // Check STEWARDX_DATABASE_URL env var
     match std::env::var("STEWARDX_DATABASE_URL") {
         Ok(_) => {
@@ -89,10 +95,23 @@ pub fn start_stewardx() {
     if let Ok(Fork::Child) = daemon(false, false) {
         Command::new(binary_path)
             .output()
+            .and_then(|a| {
+                println!("Started StewardX!");
+                Ok(a)
+            })
             .expect("failed to execute process");
         println!("Started StewardX!");
     } else {
         println!("Failed to start StewardX if you haven't already, please install it by running stewardx-cli install");
+    }
+}
+
+pub fn check_if_stewardx_is_running() -> bool {
+    let socket_path = get_socket_path();
+    if std::path::Path::exists(&socket_path) {
+        return true
+    } else {
+        return false
     }
 }
 
