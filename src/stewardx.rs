@@ -91,6 +91,8 @@ pub fn start_stewardx() {
             .output()
             .expect("failed to execute process");
         println!("Started StewardX!");
+    } else {
+        println!("Failed to start StewardX if you haven't already, please install it by running stewardx-cli install");
     }
 }
 
